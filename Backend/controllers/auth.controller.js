@@ -42,7 +42,6 @@ export const signup = async (req, res) => {
       });
     } else {
       return res.status(400).json({ message: "Invalid User Data" });
-      re;
     }
   } catch (error) {
     console.log("Error in signup Controller", error.message);
@@ -78,6 +77,46 @@ export const login = async (req, res) => {
   }
 };
 
-export const logout = (req, res) => {
-  res.send("logout route");
+export const logout = (req, res) => {               //Logout Endpoint 
+  try {
+    res.cookie("jwt","",{maxAge:0})                                //cookie-clear krni hai 
+    res.status(200).json({message:"Logged out successfully"})
+
+  } catch (error) {
+    console.log("Error in logout controller!")
+    res.status(500).json({ message: "Internal server error" });
+    
+  }
+};
+
+export const updateProfile = async (req,res) =>{       //To update the user profile picture
+  try {
+    const { profilePic } = req.body;
+    const userID = req.user._id;
+
+    if(!profilePic){
+      return res.status(400).json({message:"Profile pic is required"})
+    }
+
+    const uploadResponse = await cloudinary.uploader.upload(profilePic);
+    const updatedUser = await User.findByIdAndUpdate(userID,{profilePic:uploadResponse.secure_url},{new:true});
+
+    res.status(200).json(updatedUser);
+
+  } catch (error) {
+    console.log("Error in updateProfile controller", error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
+
+}
+
+export const checkAuth = (req, res) => {                // To check if user is authenticated when he refreshes
+  try {
+    const userID = req.user._id;
+    res.status(200).json(req.user);
+    
+  } catch (error) {
+    console.log("Error in checkAuth controller", error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
