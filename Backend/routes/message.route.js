@@ -5,8 +5,10 @@ import { getMessages, getUsersForSidebar, sendMessage } from '../controllers/mes
 
 const router = express.Router();
 
-router.get("/users",protectRoute,getUsersForSidebar);                        //For displaying all the users
-router.get("/:id",protectRoute,getMessages);    
-router.get("/send/:id",protectRoute,sendMessage);                           //For message between two users
+router.get("/users", protectRoute, getUsersForSidebar); // For displaying all the users
+// place the more specific /send/:id before the dynamic /:id so it doesn't get
+// mistakenly matched as an id of "send"
+router.get("/send/:id", protectRoute, sendMessage); // For message between two users
+router.get("/:id", protectRoute, getMessages);
 
 export default router;

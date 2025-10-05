@@ -4,20 +4,26 @@ import messageRoutes from './routes/message.route.js' // Import messageRoutes
 import dotenv from 'dotenv';
 import { connectDB } from './lib/db.js';
 import cookieParser from 'cookie-parser';
+import cors from "cors"
  
 dotenv.config();
 const app = express();
-const PORT = process.env.PORT ;
+const PORT = process.env.PORT || 3000;
+
+// Enable CORS before routes so preflight requests are handled
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+}));
 
 app.use(express.json());
 app.use(cookieParser());
-app.use("/api/auth", authRoutes);  
+
+app.use("/api/auth", authRoutes);
 app.use("/api/message", messageRoutes);
 
-
-
-app.listen(3000, () => {
-    console.log('Server is running on port Port '+ PORT);
+app.listen(PORT, () => {
+    console.log('Server is running on port ' + PORT);
     connectDB();
 });
 
